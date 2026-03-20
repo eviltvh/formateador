@@ -3,283 +3,150 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>[SNCTVM] — printf gen</title>
+<title>[SNCTVM] — printf gen v2</title>
 <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;500&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
   :root {
     --black: #0A0A0A;
     --white: #FAFAF9;
-    --gray-mid: #737373;
-    --gray-light: #D4D4D4;
+    --gray: #737373;
+    --grayL: #D4D4D4;
     --yellow: #E8FF00;
     --pink: #FF3366;
     --border: 3px solid #000;
-    --border-thin: 2px solid #000;
+    --border2: 2px solid #000;
     --shadow: 4px 4px 0 #000;
   }
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  body {
-    background: var(--black);
-    color: var(--white);
-    font-family: 'JetBrains Mono', monospace;
-    min-height: 100vh;
-    padding: 24px;
-  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:var(--black);color:var(--white);font-family:'JetBrains Mono',monospace;min-height:100vh;padding:20px}
 
-  .header {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 24px;
-  }
-  .header-bar { width: 4px; height: 24px; background: var(--yellow); }
-  .header h1 {
-    font-family: 'EB Garamond', serif;
-    font-size: 24px;
-    font-weight: 500;
-    letter-spacing: -0.02em;
-  }
-  .tag {
-    font-size: 10px;
-    font-weight: 700;
-    letter-spacing: 0.2em;
-    color: var(--black);
-    background: var(--yellow);
-    padding: 3px 8px;
-    border: var(--border-thin);
-  }
+  .header{display:flex;align-items:center;gap:10px;margin-bottom:20px}
+  .header-bar{width:4px;height:22px;background:var(--yellow)}
+  .header h1{font-family:'EB Garamond',serif;font-size:22px;font-weight:500;letter-spacing:-0.02em}
+  .tag{font-size:9px;font-weight:700;letter-spacing:0.2em;color:var(--black);background:var(--yellow);padding:3px 7px;border:var(--border2)}
 
-  .controls {
-    display: flex;
-    gap: 12px;
-    align-items: center;
-    margin-bottom: 16px;
-    flex-wrap: wrap;
-  }
-  .controls label {
-    font-size: 11px;
-    letter-spacing: 0.1em;
-    color: var(--gray-mid);
-    text-transform: uppercase;
-  }
-  .controls input, .controls select {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 12px;
-    padding: 8px 12px;
-    border: var(--border-thin);
-    background: var(--white);
-    color: var(--black);
-    outline: none;
-  }
-  .controls input:focus, .controls select:focus {
-    border-color: var(--yellow);
-  }
-  .controls input[type="number"] { width: 70px; }
-  .controls input[type="text"] { width: 160px; }
+  /* CONFIG */
+  .cfg{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:14px}
+  .cfg label{font-size:10px;letter-spacing:0.1em;color:var(--gray);text-transform:uppercase}
+  .cfg input,.cfg select{font-family:'JetBrains Mono',monospace;font-size:11px;padding:6px 10px;border:var(--border2);background:var(--white);color:var(--black);outline:none}
+  .cfg input:focus,.cfg select:focus{border-color:var(--yellow)}
+  .cfg input[type="number"]{width:60px}
+  .cfg input[type="text"]{width:120px}
 
-  .grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
-    margin-bottom: 20px;
-  }
-  @media (max-width: 860px) { .grid { grid-template-columns: 1fr; } }
+  /* SYMBOLS */
+  .syms{display:flex;gap:3px;flex-wrap:wrap;margin-bottom:10px}
+  .sy{width:30px;height:30px;display:flex;align-items:center;justify-content:center;font-size:13px;background:var(--white);color:var(--black);border:var(--border2);cursor:pointer}
+  .sy:hover{background:var(--yellow)}
 
-  .panel {
-    background: var(--white);
-    border: var(--border);
-    display: flex;
-    flex-direction: column;
-  }
-  .panel-head {
-    background: var(--black);
-    padding: 10px 16px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    border-bottom: var(--border);
-  }
-  .panel-head .dot { width: 7px; height: 7px; border-radius: 50%; }
-  .panel-head span {
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 0.15em;
-    color: var(--white);
-    text-transform: uppercase;
-  }
+  /* GRID */
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+  @media(max-width:860px){.grid{grid-template-columns:1fr}}
 
-  textarea {
-    width: 100%;
-    flex: 1;
-    min-height: 280px;
-    padding: 16px;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 12px;
-    line-height: 1.6;
-    color: var(--black);
-    background: var(--white);
-    border: none;
-    outline: none;
-    resize: vertical;
-  }
-  textarea::placeholder { color: var(--gray-mid); }
+  .panel{background:var(--white);border:var(--border);display:flex;flex-direction:column}
+  .ph{background:var(--black);padding:8px 14px;display:flex;align-items:center;gap:7px;border-bottom:var(--border)}
+  .ph .d{width:6px;height:6px;border-radius:50%}
+  .ph span{font-size:10px;font-weight:700;letter-spacing:0.15em;color:var(--white);text-transform:uppercase}
 
-  #output {
-    background: #111;
-    color: #0f0;
-    font-size: 11px;
-    line-height: 1.5;
-    cursor: text;
-    white-space: pre-wrap;
-    word-break: break-all;
-  }
+  textarea{width:100%;flex:1;min-height:300px;padding:14px;font-family:'JetBrains Mono',monospace;font-size:11px;line-height:1.55;color:var(--black);background:var(--white);border:none;outline:none;resize:vertical}
+  textarea::placeholder{color:var(--gray)}
+  #output{background:#0d0d0d;color:#0f0;font-size:10px;line-height:1.45;cursor:text;white-space:pre-wrap;word-break:break-all}
 
-  .symbols {
-    display: flex;
-    gap: 4px;
-    flex-wrap: wrap;
-    margin-bottom: 12px;
-  }
-  .sym {
-    width: 32px; height: 32px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 14px;
-    background: var(--white);
-    color: var(--black);
-    border: var(--border-thin);
-    cursor: pointer;
-  }
-  .sym:hover { background: var(--yellow); }
+  /* TICKET PREVIEW */
+  .ticket{background:#fffff0;color:var(--black);border:var(--border);padding:14px;font-family:'JetBrains Mono',monospace;font-size:11px;line-height:1.35;white-space:pre-wrap;word-wrap:break-word;max-width:360px;margin-bottom:16px;display:none;box-shadow:var(--shadow)}
 
-  .actions { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 16px; }
-  .btn {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    padding: 12px 20px;
-    border: var(--border);
-    cursor: pointer;
-    box-shadow: var(--shadow);
-    transition: transform 60ms, box-shadow 60ms;
-  }
-  .btn:active {
-    transform: translate(2px, 2px);
-    box-shadow: 2px 2px 0 #000;
-  }
-  .btn-y { background: var(--yellow); color: var(--black); }
-  .btn-p { background: var(--pink); color: var(--white); }
-  .btn-w { background: var(--white); color: var(--black); }
-  .btn-g {
-    background: transparent;
-    color: var(--gray-mid);
-    border: 2px solid var(--gray-mid);
-    box-shadow: none;
-  }
+  /* BUTTONS */
+  .acts{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+  .b{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:10px 16px;border:var(--border);cursor:pointer;box-shadow:var(--shadow);transition:transform 60ms,box-shadow 60ms}
+  .b:active{transform:translate(2px,2px);box-shadow:2px 2px 0 #000}
+  .by{background:var(--yellow);color:var(--black)}
+  .bp{background:var(--pink);color:var(--white)}
+  .bw{background:var(--white);color:var(--black)}
+  .bg{background:transparent;color:var(--gray);border:2px solid var(--gray);box-shadow:none}
 
-  .preview-ticket {
-    background: var(--white);
-    color: var(--black);
-    border: var(--border);
-    padding: 16px;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 11px;
-    line-height: 1.4;
-    white-space: pre-wrap;
-    word-wrap: break-word;
-    max-width: 380px;
-    margin-bottom: 20px;
-    display: none;
-  }
+  .info{font-size:9px;color:var(--gray);letter-spacing:0.05em;margin-bottom:10px;line-height:1.5}
 
-  .footer {
-    margin-top: 24px;
-    padding-top: 12px;
-    border-top: 1px dashed var(--gray-mid);
-    font-size: 10px;
-    color: var(--gray-mid);
-    letter-spacing: 0.1em;
-    display: flex;
-    justify-content: space-between;
-  }
+  .footer{margin-top:20px;padding-top:10px;border-top:1px dashed var(--gray);font-size:9px;color:var(--gray);letter-spacing:0.1em;display:flex;justify-content:space-between}
 </style>
 </head>
 <body>
 
 <div class="header">
   <div class="header-bar"></div>
-  <h1>printf → ticket</h1>
+  <h1>printf → ticket v2</h1>
   <span class="tag">[SNCTVM]</span>
 </div>
 
+<div class="info">
+  Genera un script bash que manda línea por línea con delays para no saturar el buffer de la impresora.
+</div>
+
 <!-- CONFIG -->
-<div class="controls">
+<div class="cfg">
   <label>Ancho:</label>
-  <input type="number" id="lineWidth" value="32" min="20" max="80">
+  <input type="number" id="lineWidth" value="32" min="16" max="80">
   <label>Impresora:</label>
   <input type="text" id="printerName" value="ticket" placeholder="nombre lp">
-  <label>Modo:</label>
-  <select id="mode">
-    <option value="printf">printf | lp</option>
-    <option value="echo">echo | lp</option>
-    <option value="printf_only">solo printf</option>
+  <label>Delay (s):</label>
+  <input type="text" id="delay" value="0.3" style="width:60px">
+  <label>Método:</label>
+  <select id="method">
+    <option value="lp_line">lp línea×línea</option>
+    <option value="dev">echo > /dev/usb (directo)</option>
+    <option value="nc">netcat (red)</option>
+    <option value="file">archivo .sh</option>
   </select>
+</div>
+<div class="cfg">
+  <label>/dev path:</label>
+  <input type="text" id="devPath" value="/dev/usb/lp0" style="width:160px" placeholder="/dev/usb/lp0">
+  <label>IP:puerto (nc):</label>
+  <input type="text" id="ncAddr" value="192.168.1.100:9100" style="width:160px" placeholder="192.168.1.100:9100">
 </div>
 
 <!-- SYMBOLS -->
-<div class="symbols">
-  <button class="sym" onclick="ins('μ')">μ</button>
-  <button class="sym" onclick="ins('Ω')">Ω</button>
-  <button class="sym" onclick="ins('π')">π</button>
-  <button class="sym" onclick="ins('θ')">θ</button>
-  <button class="sym" onclick="ins('ε₀')">ε₀</button>
-  <button class="sym" onclick="ins('²')">²</button>
-  <button class="sym" onclick="ins('³')">³</button>
-  <button class="sym" onclick="ins('⁻')">⁻</button>
-  <button class="sym" onclick="ins('×')">×</button>
-  <button class="sym" onclick="ins('→')">→</button>
-  <button class="sym" onclick="ins('≈')">≈</button>
-  <button class="sym" onclick="ins('∞')">∞</button>
-  <button class="sym" onclick="ins('Δ')">Δ</button>
-  <button class="sym" onclick="ins('∫')">∫</button>
-  <button class="sym" onclick="ins('λ')">λ</button>
-  <button class="sym" onclick="ins('·')">·</button>
+<div class="syms">
+  <button class="sy" onclick="ins('μ')">μ</button>
+  <button class="sy" onclick="ins('Ω')">Ω</button>
+  <button class="sy" onclick="ins('π')">π</button>
+  <button class="sy" onclick="ins('θ')">θ</button>
+  <button class="sy" onclick="ins('ε₀')">ε₀</button>
+  <button class="sy" onclick="ins('²')">²</button>
+  <button class="sy" onclick="ins('³')">³</button>
+  <button class="sy" onclick="ins('⁻')">⁻</button>
+  <button class="sy" onclick="ins('×')">×</button>
+  <button class="sy" onclick="ins('→')">→</button>
+  <button class="sy" onclick="ins('≈')">≈</button>
+  <button class="sy" onclick="ins('Δ')">Δ</button>
+  <button class="sy" onclick="ins('∫')">∫</button>
+  <button class="sy" onclick="ins('λ')">λ</button>
+  <button class="sy" onclick="ins('φ')">φ</button>
+  <button class="sy" onclick="ins('·')">·</button>
 </div>
 
-<!-- EDITOR -->
+<!-- PANELS -->
 <div class="grid">
   <div class="panel">
-    <div class="panel-head">
-      <div class="dot" style="background:var(--yellow)"></div>
-      <span>Texto crudo</span>
-    </div>
-    <textarea id="input" placeholder="Pega el problema aquí..."></textarea>
+    <div class="ph"><div class="d" style="background:var(--yellow)"></div><span>Texto crudo</span></div>
+    <textarea id="input" placeholder="Pega el problema aquí...&#10;&#10;Separa múltiples problemas con ---"></textarea>
   </div>
   <div class="panel">
-    <div class="panel-head">
-      <div class="dot" style="background:#0f0"></div>
-      <span>Comando</span>
-    </div>
-    <textarea id="output" readonly placeholder="El comando aparecerá aquí..."></textarea>
+    <div class="ph"><div class="d" style="background:#0f0"></div><span>Script bash</span></div>
+    <textarea id="output" readonly placeholder="El script aparecerá aquí..."></textarea>
   </div>
 </div>
 
-<!-- TICKET PREVIEW -->
-<div class="preview-ticket" id="ticketPreview"></div>
+<div class="ticket" id="ticketPreview"></div>
 
-<!-- ACTIONS -->
-<div class="actions">
-  <button class="btn btn-y" onclick="generate()">→ GENERAR</button>
-  <button class="btn btn-p" onclick="copyCmd()">COPIAR</button>
-  <button class="btn btn-w" onclick="togglePreview()">PREVIEW TICKET</button>
-  <button class="btn btn-g" onclick="clearAll()">LIMPIAR</button>
+<div class="acts">
+  <button class="b by" onclick="generate()">→ GENERAR</button>
+  <button class="b bp" onclick="copyCmd()">COPIAR</button>
+  <button class="b bw" onclick="togglePreview()">PREVIEW</button>
+  <button class="b bw" onclick="downloadSh()">↓ .SH</button>
+  <button class="b bg" onclick="clearAll()">LIMPIAR</button>
 </div>
 
 <div class="footer">
-  <span>[SNCTVM] PRINTF GEN — bynd</span>
+  <span>[SNCTVM] PRINTF GEN v2 — bynd</span>
   <span>CTRL+ENTER → GENERAR</span>
 </div>
 
@@ -288,181 +155,203 @@ const inputEl = document.getElementById('input');
 const outputEl = document.getElementById('output');
 const ticketEl = document.getElementById('ticketPreview');
 
-function ins(s) {
-  const st = inputEl.selectionStart, en = inputEl.selectionEnd;
-  inputEl.value = inputEl.value.slice(0, st) + s + inputEl.value.slice(en);
-  inputEl.selectionStart = inputEl.selectionEnd = st + s.length;
+function ins(s){
+  const a=inputEl.selectionStart,b=inputEl.selectionEnd;
+  inputEl.value=inputEl.value.slice(0,a)+s+inputEl.value.slice(b);
+  inputEl.selectionStart=inputEl.selectionEnd=a+s.length;
   inputEl.focus();
 }
+inputEl.addEventListener('keydown',e=>{if(e.ctrlKey&&e.key==='Enter'){e.preventDefault();generate()}});
+inputEl.addEventListener('paste',()=>setTimeout(generate,150));
 
-inputEl.addEventListener('keydown', e => {
-  if (e.ctrlKey && e.key === 'Enter') { e.preventDefault(); generate(); }
-});
-inputEl.addEventListener('paste', () => setTimeout(generate, 120));
-
-function cleanText(t) {
-  // Rejoin hyphenated line breaks
-  t = t.replace(/-\s*\n\s*/g, '');
-  // Collapse newlines into spaces
-  t = t.replace(/\n/g, ' ');
-  // Collapse multiple spaces
-  t = t.replace(/  +/g, ' ');
-  // Fix common symbols
-  t = t.replace(/m'3/g, 'm⁻³');
-  t = t.replace(/m-3/g, 'm⁻³');
-  t = t.replace(/m\^-3/g, 'm⁻³');
-  t = t.replace(/m\^3/g, 'm³');
-  t = t.replace(/m\^2/g, 'm²');
-  t = t.replace(/(\d)\s*x\s*10\s*\^\s*(-?\d+)/gi, '$1 × 10^$2');
-  t = t.replace(/(\d)\s*[xX]\s*10(\d)/g, '$1 × 10^$2');
-  // Fix micro symbol from OCR
-  t = t.replace(/ju(?=m\b)/gi, 'μ');
-  t = t.trim();
-  return t;
+function clean(t){
+  t=t.replace(/-\s*\n\s*/g,'');
+  t=t.replace(/\n/g,' ');
+  t=t.replace(/  +/g,' ');
+  t=t.replace(/m'3/g,'m⁻³');
+  t=t.replace(/m-3/g,'m⁻³');
+  t=t.replace(/m\^-3/g,'m⁻³');
+  t=t.replace(/m\^3/g,'m³');
+  t=t.replace(/m\^2/g,'m²');
+  t=t.replace(/(\d)\s*x\s*10\s*\^\s*(-?\d+)/gi,'$1 × 10^$2');
+  t=t.replace(/(\d)\s*[xX]\s*10(\d)/g,'$1 × 10^$2');
+  t=t.replace(/ju(?=m\b)/gi,'μ');
+  return t.trim();
 }
 
-function wordWrap(text, width) {
-  const words = text.split(' ');
-  const lines = [];
-  let current = '';
-  for (const word of words) {
-    if (current.length === 0) {
-      current = word;
-    } else if ((current + ' ' + word).length <= width) {
-      current += ' ' + word;
-    } else {
-      lines.push(current);
-      current = word;
-    }
+function wrap(text,w){
+  const words=text.split(' ');
+  const lines=[];
+  let cur='';
+  for(const word of words){
+    if(!cur){cur=word}
+    else if((cur+' '+word).length<=w){cur+=' '+word}
+    else{lines.push(cur);cur=word}
   }
-  if (current) lines.push(current);
+  if(cur)lines.push(cur);
   return lines;
 }
 
-function formatForTicket(raw, width) {
-  const cleaned = cleanText(raw);
-  const lines = [];
-  const sep = '='.repeat(width);
-  const sepThin = '-'.repeat(width);
+function formatTicket(raw,w){
+  const c=clean(raw);
+  const lines=[];
+  const sep='='.repeat(w);
+  const sep2='-'.repeat(w);
 
-  // Try to extract problem title
-  const titleMatch = cleaned.match(/^(Problema\s+(?:muestra\s+)?\d+)\s*/i);
-  let body = cleaned;
-  if (titleMatch) {
-    const title = titleMatch[1].toUpperCase();
-    // Center the title
-    const pad = Math.max(0, Math.floor((width - title.length) / 2));
-    lines.push(sep);
-    lines.push(' '.repeat(pad) + title);
-    lines.push(sep);
-    lines.push('');
-    body = cleaned.slice(titleMatch[0].length);
-  } else {
-    lines.push(sep);
-    const label = 'PROBLEMA';
-    const pad = Math.max(0, Math.floor((width - label.length) / 2));
-    lines.push(' '.repeat(pad) + label);
-    lines.push(sep);
-    lines.push('');
+  const tm=c.match(/^(Problema\s+(?:muestra\s+)?\d+)\s*/i);
+  let body=c;
+  if(tm){
+    const title=tm[1].toUpperCase();
+    const pad=Math.max(0,Math.floor((w-title.length)/2));
+    lines.push(sep,' '.repeat(pad)+title,sep,'');
+    body=c.slice(tm[0].length);
+  }else{
+    lines.push(sep,'        PROBLEMA',sep,'');
   }
 
-  // Split body at question parts (a), (b), etc.
-  const parts = body.split(/(?=\([a-z]\)\s*¿)/);
-
-  parts.forEach((part, i) => {
-    const trimmed = part.trim();
-    if (!trimmed) return;
-
-    // Check if it's a question part
-    const qMatch = trimmed.match(/^\(([a-z])\)\s*(.*)/s);
-    if (qMatch && i > 0) {
-      lines.push('');
-      lines.push(sepThin);
-      const qLines = wordWrap(trimmed, width - 2);
-      qLines.forEach(l => lines.push('> ' + l));
-    } else {
-      const wrapped = wordWrap(trimmed, width);
-      wrapped.forEach(l => lines.push(l));
+  // Split at question markers (a), (b), etc.
+  const parts=body.split(/(?=\([a-z]\)\s*¿)/);
+  parts.forEach((part,i)=>{
+    const tr=part.trim();
+    if(!tr)return;
+    if(i>0&&/^\([a-z]\)/.test(tr)){
+      lines.push('',sep2);
+      wrap(tr,w-2).forEach(l=>lines.push('> '+l));
+    }else{
+      wrap(tr,w).forEach(l=>lines.push(l));
     }
   });
 
-  lines.push('');
-  lines.push(sep);
-
+  lines.push('',sep,'');
   return lines;
 }
 
-function escapeForPrintf(str) {
-  return str
-    .replace(/\\/g, '\\\\')
-    .replace(/"/g, '\\"')
-    .replace(/%/g, '%%');
+function esc(s){
+  // Escape for printf inside single quotes won't work well,
+  // so we use $'...' syntax or just double-quote with proper escaping
+  return s.replace(/\\/g,'\\\\').replace(/"/g,'\\"').replace(/\$/g,'\\$').replace(/`/g,'\\`');
 }
 
-function generate() {
-  const raw = inputEl.value.trim();
-  if (!raw) return;
+function generate(){
+  const raw=inputEl.value.trim();
+  if(!raw)return;
 
-  const width = parseInt(document.getElementById('lineWidth').value) || 32;
-  const printer = document.getElementById('printerName').value.trim() || 'ticket';
-  const mode = document.getElementById('mode').value;
+  const w=parseInt(document.getElementById('lineWidth').value)||32;
+  const printer=document.getElementById('printerName').value.trim()||'ticket';
+  const delay=document.getElementById('delay').value.trim()||'0.3';
+  const method=document.getElementById('method').value;
+  const dev=document.getElementById('devPath').value.trim();
+  const nc=document.getElementById('ncAddr').value.trim();
 
   // Split multiple problems
   let problems;
-  if (raw.includes('---')) {
-    problems = raw.split(/---+/).map(p => p.trim()).filter(Boolean);
-  } else if (/Problema\s/i.test(raw) && (raw.match(/Problema\s/gi) || []).length > 1) {
-    problems = raw.split(/(?=Problema\s)/i).map(p => p.trim()).filter(Boolean);
-  } else {
-    problems = [raw];
+  if(raw.includes('---')){
+    problems=raw.split(/---+/).map(p=>p.trim()).filter(Boolean);
+  }else if((raw.match(/Problema\s/gi)||[]).length>1){
+    problems=raw.split(/(?=Problema\s)/i).map(p=>p.trim()).filter(Boolean);
+  }else{
+    problems=[raw];
   }
 
-  const allLines = [];
-  problems.forEach((prob, idx) => {
-    if (idx > 0) allLines.push('', '');
-    const lines = formatForTicket(prob, width);
-    allLines.push(...lines);
+  const allLines=[];
+  problems.forEach((prob,idx)=>{
+    if(idx>0){allLines.push('','');}
+    allLines.push(...formatTicket(prob,w));
   });
 
-  // Build printf string
-  const printfContent = allLines.map(l => escapeForPrintf(l)).join('\\n');
+  // Update preview
+  ticketEl.textContent=allLines.join('\n');
 
-  let cmd;
-  if (mode === 'printf') {
-    cmd = `printf "${printfContent}\\n" | lp -d ${printer} -o raw`;
-  } else if (mode === 'echo') {
-    const echoContent = allLines.join('\n');
-    cmd = `echo "${echoContent.replace(/"/g, '\\"')}" | lp -d ${printer} -o raw`;
-  } else {
-    cmd = `printf "${printfContent}\\n"`;
+  // Build script
+  let script='#!/bin/bash\n';
+  script+='# [SNCTVM] Ticket printer script — bynd\n';
+  script+=`# Ancho: ${w} | Delay: ${delay}s\n\n`;
+
+  if(method==='lp_line'){
+    script+=`PRINTER="${printer}"\n`;
+    script+=`DELAY=${delay}\n\n`;
+    allLines.forEach(line=>{
+      const escaped=esc(line);
+      script+=`printf "%s\\n" "${escaped}" | lp -d "$PRINTER" -o raw 2>/dev/null\n`;
+      script+=`sleep $DELAY\n`;
+    });
+
+  }else if(method==='dev'){
+    script+=`DEV="${dev}"\n`;
+    script+=`DELAY=${delay}\n\n`;
+    script+=`# Verificar que el dispositivo existe\n`;
+    script+=`if [ ! -w "$DEV" ]; then\n`;
+    script+=`  echo "ERROR: $DEV no existe o no tienes permisos"\n`;
+    script+=`  echo "Intenta: sudo chmod 666 $DEV"\n`;
+    script+=`  exit 1\n`;
+    script+=`fi\n\n`;
+    allLines.forEach(line=>{
+      const escaped=esc(line);
+      script+=`printf "%s\\n" "${escaped}" > "$DEV"\n`;
+      script+=`sleep $DELAY\n`;
+    });
+
+  }else if(method==='nc'){
+    const [ip,port]=(nc.includes(':')?nc:nc+':9100').split(':');
+    script+=`IP="${ip}"\n`;
+    script+=`PORT=${port}\n\n`;
+    // For netcat, build a temp file and send it
+    script+=`TMPFILE=$(mktemp /tmp/ticket_XXXXXX.txt)\n\n`;
+    script+=`# Escribir contenido al archivo temporal\n`;
+    script+=`cat > "$TMPFILE" << 'TICKET_EOF'\n`;
+    allLines.forEach(line=>{script+=line+'\n'});
+    script+=`TICKET_EOF\n\n`;
+    script+=`# Enviar línea por línea\n`;
+    script+=`while IFS= read -r line; do\n`;
+    script+=`  printf "%s\\n" "$line" | nc -w 1 "$IP" "$PORT"\n`;
+    script+=`  sleep ${delay}\n`;
+    script+=`done < "$TMPFILE"\n\n`;
+    script+=`rm -f "$TMPFILE"\n`;
+
+  }else if(method==='file'){
+    // Same as dev but outputs just the content as a file to cat later
+    script+=`# Uso: bash ticket.sh | lp -d ${printer} -o raw\n`;
+    script+=`# O:   bash ticket.sh > ${dev}\n\n`;
+    allLines.forEach(line=>{
+      const escaped=esc(line);
+      script+=`printf "%s\\n" "${escaped}"\n`;
+      script+=`sleep ${delay}\n`;
+    });
   }
 
-  outputEl.value = cmd;
+  script+=`\necho "--- ticket enviado ---"\n`;
 
-  // Update ticket preview
-  ticketEl.textContent = allLines.join('\n');
+  outputEl.value=script;
 }
 
-function copyCmd() {
-  const text = outputEl.value;
-  if (!text) return;
-  navigator.clipboard.writeText(text).then(() => {
-    const btn = document.querySelectorAll('.btn-p')[0];
-    btn.textContent = '✓ COPIADO';
-    setTimeout(() => btn.textContent = 'COPIAR', 1200);
+function copyCmd(){
+  if(!outputEl.value)return;
+  navigator.clipboard.writeText(outputEl.value).then(()=>{
+    const btn=document.querySelectorAll('.bp')[0];
+    btn.textContent='✓ OK';
+    setTimeout(()=>btn.textContent='COPIAR',1000);
   });
 }
 
-function togglePreview() {
-  if (!ticketEl.textContent && inputEl.value) generate();
-  ticketEl.style.display = ticketEl.style.display === 'none' || !ticketEl.style.display ? 'block' : 'none';
+function togglePreview(){
+  if(!ticketEl.textContent&&inputEl.value)generate();
+  ticketEl.style.display=ticketEl.style.display==='block'?'none':'block';
 }
 
-function clearAll() {
-  inputEl.value = '';
-  outputEl.value = '';
-  ticketEl.textContent = '';
-  ticketEl.style.display = 'none';
+function downloadSh(){
+  if(!outputEl.value)generate();
+  if(!outputEl.value)return;
+  const blob=new Blob([outputEl.value],{type:'text/x-shellscript'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='ticket_print.sh';
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+function clearAll(){
+  inputEl.value='';outputEl.value='';
+  ticketEl.textContent='';ticketEl.style.display='none';
 }
 </script>
 
